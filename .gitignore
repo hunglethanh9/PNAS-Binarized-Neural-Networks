@@ -102,3 +102,11 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# custom
+*.csv
+data/
+logs/
+weights/
+
+
