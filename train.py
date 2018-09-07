@@ -14,6 +14,9 @@ from model import model_fn
 import mnist_data
 
 
+if not os.path.exists('architectures/'):
+    os.makedirs('architectures/')
+
 def print_dataset_metrics(dataset):
     print()
     print("--------DATASET-------")
@@ -36,6 +39,17 @@ def build_dataset(use_expansion):
     print_dataset_metrics(dataset)
     return dataset
 
+def log_architecture(experiment_name, log_string):
+    f = open('architectures/' + experiment_name + '.txt','a')
+    f.write(log_string)
+    f.close()
+
+def get_architecure_from_action(action):
+    arc = ""
+    for i in range(len(action)):
+        arc += np.array_str(action[i]) + " "
+    return '"' + arc[:-1] + '"'
+
 
 # create a shared session between Keras and Tensorflow
 policy_sess = tf.Session()
@@ -43,8 +57,8 @@ K.set_session(policy_sess)
 
 EXPERIMENT_NAME = "HARD-LIMIT-3mul10pow6-REMOVE-SKIP"
 
-B = 1   # number of blocks in each cell
-K_ = 32  # number of children networks to train
+B = 3   # number of blocks in each cell
+K_ = 3  # number of children networks to train
 DROPOUT= (False, 0, 0)
 MAX_EPOCHS = 1  # maximum number of epochs to train
 BATCHSIZE = 128  # batchsize
@@ -62,7 +76,7 @@ LOAD_SAVED = False
 
 
 
-operators = ['3x3 bconv','5x5 bconv','7x7 bconv', '1x7-7x1 bconv',
+operators = ['3x3 bconv','5x5 bconv', '1x7-7x1 bconv',
               '3x3 maxpool']  # use the default set of operators, minus identity and conv 3x3
 
 # construct a state space
@@ -87,8 +101,11 @@ with policy_sess.as_default():
 manager = NetworkManager(dataset, EXPERIMENT_NAME,  epochs=MAX_EPOCHS, batchsize=BATCHSIZE)
 print()
 
+log_architecture(EXPERIMENT_NAME, 'All the evaluated architectures will be logged in this file. \n \n \n')
+
 # train for number of trails with the corresponding B. 
 for trial in range(B):
+    log_architecture(EXPERIMENT_NAME, '---- B= ' + str(trial) + " Architectures ---- \n" )
 
     with policy_sess.as_default():
         K.set_session(policy_sess)
@@ -101,6 +118,11 @@ for trial in range(B):
         actions = controller.get_actions(top_k=k)  # get all actions for the previous state
     rewards = []
     for t, action in enumerate(actions):
+
+        # print("Action Type: ", (action[0]))
+        # print("Architecture: ", get_architecure_from_action(action))
+        # for i in range(len(action)):
+            # print("Printing action " + str(i) + " :",action[i])
         # print the action probabilities
         state_space.print_actions(action)
         print("Model #%d / #%d" % (t + 1, len(actions)))
@@ -115,12 +137,15 @@ for trial in range(B):
         # write the results of this trial into a file
         train_hist_name = EXPERIMENT_NAME + '_train_history.csv'
 
-        with open(train_hist_name, mode='a+', newline='') as f:
-            data = [reward]
-            data.extend(state_space.parse_state_space_list(action))
-            data.extend(action)
-            writer = csv.writer(f)
-            writer.writerow(data)
+        log_str = "\nSr. No: " + str(t+1) + "\nArchitecture: " + str(state_space.parse_state_space_list(action)) + "\nRepresentation String: " + get_architecure_from_action(action) + "\n"
+        log_architecture(EXPERIMENT_NAME, log_str)
+
+        # with open(train_hist_name, mode='a+', newline='') as f:
+        #     data = [reward]
+        #     data.extend(state_space.parse_state_space_list(action))
+        #     data.extend(action)
+        #     writer = csv.writer(f)
+        #     writer.writerow(data)
 
     with policy_sess.as_default():
         K.set_session(policy_sess)
@@ -130,5 +155,6 @@ for trial in range(B):
 
         controller.update_step()
         print()
+    log_architecture(EXPERIMENT_NAME, "\n \n --------------------EXPERIMENT FINISHED------------------- \n \n")
 
 print("Finished !")
