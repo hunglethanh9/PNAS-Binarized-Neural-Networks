@@ -1,8 +1,8 @@
 import numpy as np
 import csv
 import os
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+# os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
 import tensorflow as tf
 from keras import backend as K
 from keras.datasets import cifar10, cifar100
@@ -35,7 +35,7 @@ def build_dataset(use_expansion):
     train_labels = train_total_data[:, -10:]
     x = [train_data, train_labels, validation_data, validation_labels, test_data, test_labels]
     x_train, y_train, x_val, y_val, x_test, y_test = mnist_process(x)
-    dataset = [x_train, y_train, x_val, y_val, x_test, y_test]
+    dataset = [x_train[:10], y_train[:10], x_val[:10], y_val[:10], x_test[:10], y_test[:10]]
     print_dataset_metrics(dataset)
     return dataset
 
@@ -59,12 +59,14 @@ EXPERIMENT_NAME = "HARD-LIMIT-3mul10pow6-REMOVE-SKIP"
 
 B = 3   # number of blocks in each cell
 K_ = 3  # number of children networks to train
-DROPOUT= (False, 0, 0)
+DROP_INPUT = 0.2
+DROP_HIDDEN = 0.5
+DROPOUT= (False, DROP_INPUT, DROP_HIDDEN) # dropout only applied to the dense layers and the input
 MAX_EPOCHS = 1  # maximum number of epochs to train
 BATCHSIZE = 128  # batchsize
 REGULARIZATION = 0  # regularization strength
 CONTROLLER_CELLS = 100  # number of cells in RNN controller
-RNN_TRAINING_EPOCHS = 20
+RNN_TRAINING_EPOCHS = 15
 RESTORE_CONTROLLER = True  # restore controller to continue training
 NUM_CELLS = 3
 NUM_CELL_FILTERS = [16, 24, 32]
@@ -74,10 +76,8 @@ USE_EXPANSION = False
 
 LOAD_SAVED = False
 
-
-
-operators = ['3x3 bconv','5x5 bconv', '1x7-7x1 bconv',
-              '3x3 maxpool']  # use the default set of operators, minus identity and conv 3x3
+operators = ['3x3 sep-bconv','5x5 sep-bconv', '1x7-7x1 conv',
+              '3x3 bconv']  # use the default set of operators, minus identity and conv 3x3
 
 # construct a state space
 state_space = StateSpace(B, input_lookback_depth=0, input_lookforward_depth=0,

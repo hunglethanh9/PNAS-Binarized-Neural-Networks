@@ -324,7 +324,6 @@ Final Accuracy :  (0.9924, -59713136.0)
 
 
 os.environ["CUDA_VISIBLE_DEVICES"]="3"
-# dropout
 drop_in = 0.2
 drop_hidden = 0.5
 DROPOUT = (False ,drop_in, drop_hidden)
