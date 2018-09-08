@@ -44,7 +44,7 @@ def get_dataset(use_expansion):
     train_labels = train_total_data[:, -10:]
     x = [train_data, train_labels, validation_data, validation_labels, test_data, test_labels]
     x_train, y_train, x_val, y_val, x_test, y_test = mnist_process(x)
-    dataset = [x_train[:10], y_train[:10], x_val[:10], y_val[:10], x_test[:10], y_test[:10]]
+    dataset = [x_train, y_train, x_val, y_val, x_test, y_test]
     print_dataset_metrics(dataset)
     return dataset
 
