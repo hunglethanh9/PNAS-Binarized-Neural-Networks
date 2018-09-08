@@ -3,8 +3,8 @@ from keras.models import Model
 from keras.layers import Input, Dense, Activation, MaxPool2D, AveragePooling2D, concatenate
 from keras.layers import BatchNormalization, Flatten
 from keras import backend as K
-from binary_ops import binary_tanh as binary_tanh_op
-from binary_layers import BinaryDense, BinaryConv2D, DropoutNoScale, DepthwiseBinaryConv2D
+from binarized.binary_ops import binary_tanh as binary_tanh_op
+from binarized.binary_layers import BinaryDense, BinaryConv2D, DropoutNoScale, DepthwiseBinaryConv2D
 import tensorflow as tf
 
 H = 1.0

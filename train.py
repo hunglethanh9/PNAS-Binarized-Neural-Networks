@@ -7,11 +7,11 @@ import tensorflow as tf
 from keras import backend as K
 from keras.datasets import cifar10, cifar100
 from keras.utils import to_categorical
-from binary_ops import mnist_process
-from encoder import Encoder, StateSpace
-from manager import NetworkManager
-from model import model_fn
-import mnist_data
+from binarized.binary_ops import mnist_process
+from pnas.encoder import Encoder, StateSpace
+from pnas.manager import NetworkManager
+from pnas.model import model_fn
+from mnist import mnist_data
 
 
 if not os.path.exists('architectures/'):
