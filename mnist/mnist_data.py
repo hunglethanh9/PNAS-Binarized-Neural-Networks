@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import gzip
 import os
+from binarized.binary_ops import mnist_process
 
 import numpy
 from scipy import ndimage
@@ -23,6 +24,30 @@ NUM_CHANNELS = 1
 PIXEL_DEPTH = 255
 NUM_LABELS = 10
 VALIDATION_SIZE = 5000  # Size of the validation set.
+
+
+def print_dataset_metrics(dataset):
+    print()
+    print("--------DATASET-------")
+    print("X train shape: ", dataset[0].shape)
+    print("Y train shape: ", dataset[1].shape)
+
+    print("X val shape: ", dataset[2].shape)
+    print("Y val shape: ", dataset[3].shape)
+
+    print("X test shape: ", dataset[4].shape)
+    print("Y test shape: ", dataset[5].shape)
+
+def get_dataset(use_expansion):
+    train_total_data, train_size, validation_data, validation_labels, test_data, test_labels = prepare_MNIST_data(use_expansion)
+    train_data = train_total_data[:, :-10]
+    train_labels = train_total_data[:, -10:]
+    x = [train_data, train_labels, validation_data, validation_labels, test_data, test_labels]
+    x_train, y_train, x_val, y_val, x_test, y_test = mnist_process(x)
+    dataset = [x_train[:10], y_train[:10], x_val[:10], y_val[:10], x_test[:10], y_test[:10]]
+    print_dataset_metrics(dataset)
+    return dataset
+
 
 # Download MNIST data
 def maybe_download(filename):
