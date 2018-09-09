@@ -38,7 +38,7 @@ Progressive Neural Architecture Search searches through the space in a sequentia
 
 Binarized Neural Networks with binary weights and activations at run-time drastically reduce memory size and accesses, and replace most arithmetic operations with bit-wise operations which substantially improve power-efficiency. Both the weights and the activations are constrained to either +1 or -1. 
 
-Binarization function used in the experiment is deterministic binary-tanh which is placed in this [file][3]. 
+Binarization function used in the experiment is deterministic binary-tanh which is placed in [```binary_ops.py```][3]. 
 
 
 Setup Dependencies
@@ -48,12 +48,120 @@ The recommended version for running the experiments is Python3, however it works
 1. Follow the installation guide on [Tensorflow Homepage][4] for installing Tensorflow-GPU or Tensorflow-CPU. 
 2. Follow instructions outlined on [Keras Homepage][5] for installing Keras.
 
+Run a vanilla experiment using the following command at the directory root folder. 
+```bash 
+python train.py
+```
 
 
+Project Structure
+-----------------
+The skeletal overview of the project is as follows: 
+
+```bash
+.
+├── binarized/
+│   ├── binary_layers.py  # Custom binary layers are defined in Keras 
+│   └── binary_ops.py     # Binarization and activation functions
+├── mnist/
+│   ├── download_mnist.py # Script for downloading MNIST
+│   └── mnist_data.py     # Functions for pre-processing MNIST
+├── pnas/
+│   ├── encoder.py        # Defines the RNN Encoder and State Space
+│   ├── manager.py        # Manages generation of child networks and training
+│   └── model.py          # Contain functions to generate child networks 
+├── train.py              # Defines the experiment settings
+.
+below folders and files will be generated after you run the experiment
+.
+├── logs/                 # Stores logs for the experiment 
+├── architectures/        # Stores the architectures evaluated and their corresponding rewards
+├── weights/              # Stores the weights of the best architecture trained 
+└── .gitignore
+```
 
 
+Defining Experiment Configuration 
+---------------------------------
+
+#### Architecture Search
+
+To run the architecture search experiment you can edit the following sections of [```train.py```][7] file. 
+ 
+
+```bash
+# -------Controller Training Settings-------
+B = 3   # Maximum number of block in the cell
+K_ = 128  # Number of children to be trained for each block size
+REGULARIZATION = 0  # Regularization strength on RNN controller
+CONTROLLER_CELLS = 100  # Number of cells in RNN controller
+RNN_TRAINING_EPOCHS = 15 # Number of training epochs during each run of the encoder training
+RESTORE_CONTROLLER = True  # Restore a pre-trained controller from earlier run 
+# ------------------------------------------
 
 
+# ------- Common Settings --------
+DROP_INPUT = 0.2  # Dropout parameter for the input layer
+DROP_HIDDEN = 0.5  # Dropout parameter for the hidden dense layers
+DROPOUT= (False, DROP_INPUT, DROP_HIDDEN) # Dropout only applied to the dense layers and the input
+MAX_EPOCHS = 20  # Maximum number of epochs to train each child network
+BATCHSIZE = 128  # Batchsize while training child networks
+NUM_CELLS = 3 # No. of cells to stack in each architecture
+NUM_CELL_FILTERS = [16, 24, 32] # No. of filters in each cell
+DENSE_LAYERS = [32, 10] # No. of neurons in the final dense layers
+USE_EXPANSION = False # If true uses expanded MNIST with data augmentation and rotation 
+operators = ['3x3 sep-bconv','5x5 sep-bconv', '1x7-7x1 bconv',
+              '3x3 bconv']  # Defines set of possible operations in the search space
+# --------------------------------
+
+```
+
+You can add the following operations inside the operators array above to grow the search space. 
+
+````bash 
+operators = ['3x3 sep-bconv','5x5 sep-bconv', '7x7 sep-bconv','3x3 bconv', '5x5 bconv',
+              '7x7 bconv', '1x7-7x1 bconv', '3x3 maxpool', '3x3 avgpool', 'linear' ]
+````
+These operations are defined in [```pnas/model.py```][6] file you can add your custom operations there. 
+
+
+#### Analyzing Output 
+
+All the trained architectures are stored in ```architectures/{EXPERIMENT_NAME}.txt ``` file. The output for an architecture will be logged as follows: 
+
+```bash
+Sr. No: 1
+Reward: 0.4846  # Defines the reward/accuracy 
+Architecture: [0, '3x3 sep-bconv', 0, '3x3 sep-bconv']  # Architecture Specification 
+Representation String: "[[1. 0. 0.]] [[1. 0. 0. 0.]] [[1. 0. 0.]] [[1. 0. 0. 0.]]"  # This will be used for training architectures till convergence
+```
+The architecture with highest reward needs to be trained till convergence, follow the steps below for it. 
+
+#### Training Architecture  
+
+To train an architecture till convergence edit the following sections of [```train.py```][7] file. 
+
+```bash
+# ------- Common Settings --------
+DROP_INPUT = 0.2  # Dropout parameter for the input layer
+DROP_HIDDEN = 0.5  # Dropout parameter for the hidden dense layers
+DROPOUT= (False, DROP_INPUT, DROP_HIDDEN) # Dropout only applied to the dense layers and the input
+MAX_EPOCHS = 20  # Maximum number of epochs to train each child network
+BATCHSIZE = 128  # Batchsize while training child networks
+NUM_CELLS = 3 # No. of cells to stack in each architecture
+NUM_CELL_FILTERS = [16, 24, 32] # No. of filters in each cell
+DENSE_LAYERS = [32, 10] # No. of neurons in the final dense layers
+USE_EXPANSION = False # If true uses expanded MNIST with data augmentation and rotation 
+operators = ['3x3 sep-bconv','5x5 sep-bconv', '1x7-7x1 bconv',
+              '3x3 bconv']  # Defines set of possible operations in the search space
+# --------------------------------
+
+# -------Architecture Training Settings-----
+ARCHITECTURE_STRING = "[[1. 0. 0.]] [[1. 0. 0. 0.]] [[1. 0. 0.]] [[1. 0. 0. 0.]]"  # Replace this string with the architecture representation string required
+LOAD_SAVED = False # Set this to true to continue training a saved architecture 
+# ------------------------------------------
+
+```
 
 
 
@@ -62,3 +170,5 @@ The recommended version for running the experiments is Python3, however it works
 [3]:https://github.com/yashkant/PNAS-Binarized-Neural-Networks/blob/master/binarized/binary_ops.py
 [4]:https://www.tensorflow.org/install/
 [5]:https://keras.io/#installation
+[6]:https://github.com/yashkant/PNAS-Binarized-Neural-Networks/blob/master/pnas/model.py
+[7]:https://github.com/yashkant/PNAS-Binarized-Neural-Networks/blob/master/train.py
