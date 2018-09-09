@@ -1,1 +1,1 @@
-# Progressive-Neural-Architecture-Search-On-Binarized-Neural-Networks
+# Progressive Neural Architecture Search with Binarized Neural Networks
