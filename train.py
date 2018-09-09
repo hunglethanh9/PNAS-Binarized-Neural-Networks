@@ -60,7 +60,7 @@ EXPERIMENT_NAME = "HARD-LIMIT-3mul10pow6-REMOVE-SKIP"
 
 # -------Controller Training Settings-------
 B = 3   # number of blocks in each cell
-K_ = 3  # number of children networks to train
+K_ = 64  # number of children networks to train
 REGULARIZATION = 0  # regularization strength on RNN controller
 CONTROLLER_CELLS = 100  # number of cells in RNN controller
 RNN_TRAINING_EPOCHS = 15
@@ -74,7 +74,7 @@ RESTORE_CONTROLLER = True  # restore controller to continue training
 DROP_INPUT = 0.2
 DROP_HIDDEN = 0.5
 DROPOUT= (False, DROP_INPUT, DROP_HIDDEN) # dropout only applied to the dense layers and the input
-MAX_EPOCHS = 20  # maximum number of epochs to train
+MAX_EPOCHS = 6  # maximum number of epochs to train
 BATCHSIZE = 128  # batchsize
 NUM_CELLS = 3 # No. of cells in each architecture
 NUM_CELL_FILTERS = [16, 24, 32]
@@ -88,6 +88,7 @@ operators = ['3x3 sep-bconv','5x5 sep-bconv', '1x7-7x1 conv',
 
 
 # -------Architecture Training Settings-------
+NUM_EPOCHS = 200 
 ARCHITECTURE_STRING = "[[1. 0. 0.]] [[1. 0. 0. 0.]] [[1. 0. 0.]] [[1. 0. 0. 0.]]"
 LOAD_SAVED = False # Use this to continue training a saved architecture 
 # ------------------------------------------
@@ -104,14 +105,15 @@ dataset = get_dataset(USE_EXPANSION)
 state_space = StateSpace(B, input_lookback_depth=0, input_lookforward_depth=0,
                          operators=operators)
 
-# create the Network Manager
-manager = NetworkManager(dataset, EXPERIMENT_NAME,  epochs=MAX_EPOCHS, batchsize=BATCHSIZE)
+
 
 
 
 
 # Execute PNAS
 if(TRAIN_ARCHITECTURE is False):
+    # create the Network Manager
+    manager = NetworkManager(dataset, EXPERIMENT_NAME,  epochs=MAX_EPOCHS, batchsize=BATCHSIZE)
     # print the state space being searched
     LOAD_SAVED = False # this is used to load a saved model in architecture training 
     state_space.print_state_space()
@@ -174,6 +176,8 @@ if(TRAIN_ARCHITECTURE is False):
 
 # Execute architecture training
 else:
+    # create the Network Manager
+    manager = NetworkManager(dataset, EXPERIMENT_NAME,  epochs=NUM_EPOCHS, batchsize=BATCHSIZE)
     action = get_action(ARCHITECTURE_STRING)
     print("Predicted actions : ", state_space.parse_state_space_list(action))
     reward = manager.get_rewards(model_fn, state_space.parse_state_space_list(action), NUM_CELLS, NUM_CELL_FILTERS, DENSE_LAYERS, LOAD_SAVED, DROPOUT)
