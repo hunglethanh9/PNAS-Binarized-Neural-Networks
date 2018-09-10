@@ -89,7 +89,7 @@ operators = ['3x3 sep-bconv','5x5 sep-bconv', '1x7-7x1 conv',
 
 # -------Architecture Training Settings-------
 NUM_EPOCHS = 200 
-ARCHITECTURE_STRING = "[[1. 0. 0.]] [[1. 0. 0. 0.]] [[1. 0. 0.]] [[1. 0. 0. 0.]]"
+REPRESENTATION_STRING = "[[1. 0. 0.]] [[1. 0. 0. 0.]] [[1. 0. 0.]] [[1. 0. 0. 0.]]"
 LOAD_SAVED = False # Use this to continue training a saved architecture 
 # ------------------------------------------
 
@@ -104,7 +104,6 @@ dataset = get_dataset(USE_EXPANSION)
 # construct a state space
 state_space = StateSpace(B, input_lookback_depth=0, input_lookforward_depth=0,
                          operators=operators)
-
 
 
 
@@ -178,7 +177,7 @@ if(TRAIN_ARCHITECTURE is False):
 else:
     # create the Network Manager
     manager = NetworkManager(dataset, EXPERIMENT_NAME,  epochs=NUM_EPOCHS, batchsize=BATCHSIZE)
-    action = get_action(ARCHITECTURE_STRING)
+    action = get_action(REPRESENTATION_STRING)
     print("Predicted actions : ", state_space.parse_state_space_list(action))
     reward = manager.get_rewards(model_fn, state_space.parse_state_space_list(action), NUM_CELLS, NUM_CELL_FILTERS, DENSE_LAYERS, LOAD_SAVED, DROPOUT)
     print("Final Accuracy : ", reward)
