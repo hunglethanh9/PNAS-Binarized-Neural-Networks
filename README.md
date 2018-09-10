@@ -1,6 +1,6 @@
 # Progressive Neural Architecture Search with Binarized Neural Networks
 
-**This project combines the architecture search strategy from [Progressive Neural Architecture Search][1] with the search space of Binarized Neural Networks [Binarized Neural Networks][2].** 
+**This project combines the architecture search strategy from [Progressive Neural Architecture Search][1] with the search space of [Binarized Neural Networks][2].** 
 
 
 
