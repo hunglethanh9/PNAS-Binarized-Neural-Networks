@@ -52,12 +52,11 @@ The skeletal overview of the project is as follows:
 │   └── model.py          # Contain functions to generate child networks 
 ├── train.py              # Defines the experiment settings
 .
-below folders and files will be generated after you run the experiment
+folders and files below will be generated after you run the experiment
 .
 ├── logs/                 # Stores logs for the experiment 
 ├── architectures/        # Stores the architectures evaluated and their corresponding rewards
-├── weights/              # Stores the weights of the best architecture trained 
-└── .gitignore
+└── weights/              # Stores the weights of the best architecture trained 
 ```
 
 
@@ -138,8 +137,8 @@ LOAD_SAVED = False # Set this to true to continue training a saved architecture
 
 ```
 
-#### References 
-
+References
+----------
 
 If you find this code useful, please consider citing the original work by the authors:
 
