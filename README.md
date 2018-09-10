@@ -171,3 +171,12 @@ If you find this code useful, please consider citing the original work by the au
 [5]:https://keras.io/#installation
 [6]:https://github.com/yashkant/PNAS-Binarized-Neural-Networks/blob/master/pnas/model.py
 [7]:https://github.com/yashkant/PNAS-Binarized-Neural-Networks/blob/master/train.py
+
+
+Thanks to 
+---------
+
+This work wouldn't have been possible without the help from the following repos:
+
+1. https://github.com/titu1994/progressive-neural-architecture-search
+2. https://github.com/DingKe/nn_playground/
