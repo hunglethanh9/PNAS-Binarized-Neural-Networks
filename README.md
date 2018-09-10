@@ -1,28 +1,8 @@
 # Progressive Neural Architecture Search with Binarized Neural Networks
 
-**This project combines the architecture search strategy from [Progressive Neural Architecture Search][1] with the search space of Binarized Neural Networks [Binarized Neural Networks][2].** 
+**This project combines the architecture search strategy from [Progressive Neural Architecture Search][1] with the search space of [Binarized Neural Networks][2].** 
 
 
-If you find this code useful, please consider citing the original work by authors:
-
-```
-@article{liu2017progressive,
-  title={Progressive neural architecture search},
-  author={Liu, Chenxi and Zoph, Barret and Shlens, Jonathon and Hua, Wei and Li, Li-Jia and Fei-Fei, Li and Yuille, Alan and Huang, Jonathan and Murphy, Kevin},
-  journal={arXiv preprint arXiv:1712.00559},
-  year={2017}
-}
-```
-
-```
-@inproceedings{hubara2016binarized,
-  title={Binarized neural networks},
-  author={Hubara, Itay and Courbariaux, Matthieu and Soudry, Daniel and El-Yaniv, Ran and Bengio, Yoshua},
-  booktitle={Advances in neural information processing systems},
-  pages={4107--4115},
-  year={2016}
-}
-```
 
 Introduction
 ------------
@@ -72,12 +52,11 @@ The skeletal overview of the project is as follows:
 │   └── model.py          # Contain functions to generate child networks 
 ├── train.py              # Defines the experiment settings
 .
-below folders and files will be generated after you run the experiment
+folders and files below will be generated after you run the experiment
 .
 ├── logs/                 # Stores logs for the experiment 
 ├── architectures/        # Stores the architectures evaluated and their corresponding rewards
-├── weights/              # Stores the weights of the best architecture trained 
-└── .gitignore
+└── weights/              # Stores the weights of the best architecture trained 
 ```
 
 
@@ -124,6 +103,12 @@ operators = ['3x3 sep-bconv','5x5 sep-bconv', '7x7 sep-bconv','3x3 bconv', '5x5 
 ````
 These operations are defined in [```pnas/model.py```][6] file you can add your custom operations there. 
 
+Use the following command to run the experiment finally. 
+
+```bash 
+python train.py
+```
+
 
 #### Analyzing Output 
 
@@ -137,31 +122,45 @@ Representation String: "[[1. 0. 0.]] [[1. 0. 0. 0.]] [[1. 0. 0.]] [[1. 0. 0. 0.]
 ```
 The architecture with highest reward needs to be trained till convergence, follow the steps below for it. 
 
+
 #### Training Architecture  
 
-To train an architecture till convergence edit the following sections of [```train.py```][7] file. 
+To train an architecture till convergence edit the following section of [```train.py```][7] file. Pick the required architecture's representation string (see above) from the output and replace the corresponding field below with it. 
 
 ```bash
-# ------- Common Settings --------
-DROP_INPUT = 0.2  # Dropout parameter for the input layer
-DROP_HIDDEN = 0.5  # Dropout parameter for the hidden dense layers
-DROPOUT= (False, DROP_INPUT, DROP_HIDDEN) # Dropout only applied to the dense layers and the input
-MAX_EPOCHS = 20  # Maximum number of epochs to train each child network
-BATCHSIZE = 128  # Batchsize while training child networks
-NUM_CELLS = 3 # No. of cells to stack in each architecture
-NUM_CELL_FILTERS = [16, 24, 32] # No. of filters in each cell
-DENSE_LAYERS = [32, 10] # No. of neurons in the final dense layers
-USE_EXPANSION = False # If true uses expanded MNIST with data augmentation and rotation 
-operators = ['3x3 sep-bconv','5x5 sep-bconv', '1x7-7x1 bconv',
-              '3x3 bconv']  # Defines set of possible operations in the search space
-# --------------------------------
 
 # -------Architecture Training Settings-----
-ARCHITECTURE_STRING = "[[1. 0. 0.]] [[1. 0. 0. 0.]] [[1. 0. 0.]] [[1. 0. 0. 0.]]"  # Replace this string with the architecture representation string required
+NUM_EPOCHS = 200  # Define the number of epochs.
+REPRESENTATION_STRING = "[[1. 0. 0.]] [[1. 0. 0. 0.]] [[1. 0. 0.]] [[1. 0. 0. 0.]]"  # Replace this string with the architecture representation string required
 LOAD_SAVED = False # Set this to true to continue training a saved architecture 
 # ------------------------------------------
 
 ```
+
+References
+----------
+
+If you find this code useful, please consider citing the original work by the authors:
+
+```
+@article{liu2017progressive,
+  title={Progressive neural architecture search},
+  author={Liu, Chenxi and Zoph, Barret and Shlens, Jonathon and Hua, Wei and Li, Li-Jia and Fei-Fei, Li and Yuille, Alan and Huang, Jonathan and Murphy, Kevin},
+  journal={arXiv preprint arXiv:1712.00559},
+  year={2017}
+}
+```
+
+```
+@inproceedings{hubara2016binarized,
+  title={Binarized neural networks},
+  author={Hubara, Itay and Courbariaux, Matthieu and Soudry, Daniel and El-Yaniv, Ran and Bengio, Yoshua},
+  booktitle={Advances in neural information processing systems},
+  pages={4107--4115},
+  year={2016}
+}
+```
+
 
 
 
