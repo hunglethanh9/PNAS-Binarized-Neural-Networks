@@ -140,7 +140,7 @@ After replacing the ```REPRESENTATION_STRING``` run the following command:
 
 ```bash
 
-python -ta True
+python train.py -ta True
 
 ```
 
