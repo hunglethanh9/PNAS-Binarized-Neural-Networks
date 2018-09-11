@@ -136,6 +136,14 @@ LOAD_SAVED = False # Set this to true to continue training a saved architecture
 # ------------------------------------------
 
 ```
+After replacing the ```REPRESENTATION_STRING``` run the following command:
+
+```bash
+
+python -ta True
+
+```
+
 
 References
 ----------
